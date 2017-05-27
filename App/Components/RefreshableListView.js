@@ -28,34 +28,38 @@
  *                       loadMoreText={'Load More...'}/>
  *
  */
-const React = require('react-native');
+import React from 'react'
 
-const {
+import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   Platform
-} = React;
+} from 'react-native';
 
-const GiftedListView = require('react-native-gifted-listview');
+import GiftedListView from 'react-native-gifted-listview'
 
-module.exports = React.createClass({
-  getInitialState: function () {
-    return {
+export default class RefreshableListView extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
       renderRow: this.props.renderRow,
       backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : '#FFFFFF',
       loadMoreText: this.props.loadMoreText ? this.props.loadMoreText : 'Load More...',
       renderHeader: this.props.renderHeader ? this.props.renderHeader : null,
-    };
-  },
-  onRefresh: function (page = 1, callback, options) {
+    }
+  }
+
+  onRefresh(page = 1, callback, options) {
     this.props.onRefresh(page, callback);
-  },
-  renderRow: function (row) {
+  }
+
+  renderRow(row) {
     return this.state.renderRow(row);
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <View style={[styles.container, {backgroundColor: this.state.backgroundColor}, this.props.style]}>
         <View style={styles.navBarSpace}/>
@@ -81,13 +85,15 @@ module.exports = React.createClass({
                         }}/>
       </View>
     );
-  },
-  renderPaginationAllLoadedView: function () {
+  }
+
+  renderPaginationAllLoadedView() {
     return (
       <View />
     );
-  },
-  renderPaginationWaitingView: function (paginateCallback) {
+  }
+
+  renderPaginationWaitingView(paginateCallback) {
     return (
       <TouchableOpacity style={styles.paginationView}
                         onPress={paginateCallback}>
@@ -96,14 +102,15 @@ module.exports = React.createClass({
         </Text>
       </TouchableOpacity>
     );
-  },
-  renderHeaderView: function () {
+  }
+
+  renderHeaderView() {
     if (this.state.renderHeader) {
       return this.props.renderHeader();
     }
     return (null);
   }
-});
+}
 
 const styles = StyleSheet.create({
   container: {
