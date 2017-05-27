@@ -28,7 +28,7 @@
  *                       loadMoreText={'Load More...'}/>
  *
  */
-import React from 'react'
+import React, {Component} from 'react'
 
 import {
   StyleSheet,
@@ -40,15 +40,19 @@ import {
 
 import GiftedListView from 'react-native-gifted-listview'
 
-export default class RefreshableListView extends React.Component {
+export default class RefreshableListView extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       renderRow: this.props.renderRow,
       backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : '#FFFFFF',
-      loadMoreText: this.props.loadMoreText ? this.props.loadMoreText : 'Load More...',
       renderHeader: this.props.renderHeader ? this.props.renderHeader : null,
     }
+
+    this.onRefresh = this.onRefresh.bind(this)
+    this.renderHeaderView = this.renderHeaderView.bind(this)
+    this.renderRow = this.renderRow.bind(this)
   }
 
   onRefresh(page = 1, callback, options) {
@@ -98,7 +102,7 @@ export default class RefreshableListView extends React.Component {
       <TouchableOpacity style={styles.paginationView}
                         onPress={paginateCallback}>
         <Text style={styles.loadMoreText}>
-          {this.state.loadMoreText}
+          {'Load more...'}
         </Text>
       </TouchableOpacity>
     );

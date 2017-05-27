@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react'
+import React, {Component} from 'react'
 
 import {
   StyleSheet,
@@ -15,7 +15,11 @@ import RefreshableListView from './RefreshableListView'
 
 const PAGE_SIZE = 20
 
-export default class List extends React.Component {
+export default class List extends Component {
+  constructor(props) {
+    super(props)
+  }
+
   render() {
     return (
       <RefreshableListView renderRow={(row) => this.renderListViewRow(row)}
