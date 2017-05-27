@@ -1,4 +1,4 @@
-package com.bitcoinapp;
+package com.coinmarketcap;
 
 import android.app.Application;
 
