@@ -6,6 +6,7 @@ const colors = {
   headerText: '#FFFFFF',
   text: '#808080',
   separator: '#CCCCCC',
+  clair: '#F6F6EF',
 
   lightYellow: '#FFEDB2',
   yellowGreen: '#153607',

@@ -27,7 +27,7 @@ export default class List extends Component {
         <RefreshableListView renderRow={(row) => this.renderListViewRow(row)}
                              renderHeader={() => <Header text={this.props.text}/>}
                              onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
-                             backgroundColor={'#F6F6EF'}/>
+                             backgroundColor={Colors.clair}/>
     )
   }
 

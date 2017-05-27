@@ -39,6 +39,7 @@ import {
 } from 'react-native'
 
 import GiftedListView from 'react-native-gifted-listview'
+import {Colors} from '../Themes/'
 
 export default class RefreshableListView extends Component {
   constructor(props) {
@@ -46,7 +47,7 @@ export default class RefreshableListView extends Component {
 
     this.state = {
       renderRow: this.props.renderRow,
-      backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : '#FFFFFF',
+      backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : Colors.white,
       renderHeader: this.props.renderHeader ? this.props.renderHeader : null,
     }
 
@@ -72,10 +73,8 @@ export default class RefreshableListView extends Component {
                         paginationAllLoadedView={this.renderPaginationAllLoadedView}
                         paginationWaitingView={this.renderPaginationWaitingView}
                         headerView={this.renderHeaderView}
-                        PullToRefreshViewAndroidProps={{
-                          colors: ['#F6F6EF'],
-                          progressBackgroundColor: 'purple',
-                        }}
+                        refreshableProgressBackgroundColor={Colors.clair}
+                        refreshableColors={[Colors.main]}
                         customStyles={{
                           refreshableView: {
                             backgroundColor: this.state.backgroundColor,
