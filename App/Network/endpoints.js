@@ -1,0 +1,1 @@
+export const CMC_COINS = 'https://api.coinmarketcap.com/v1/ticker/?convert=BRL&limit='
