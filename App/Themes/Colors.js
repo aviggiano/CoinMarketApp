@@ -1,6 +1,12 @@
 // @flow
 
 const colors = {
+  main: '#800080',
+  headerBackground: '#800080',
+  headerText: '#FFFFFF',
+  text: '#808080',
+  separator: '#CCCCCC',
+
   lightYellow: '#FFEDB2',
   yellowGreen: '#153607',
   mediumYellow: '#ede576',

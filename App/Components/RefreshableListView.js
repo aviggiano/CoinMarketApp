@@ -36,7 +36,7 @@ import {
   View,
   TouchableOpacity,
   Platform
-} from 'react-native';
+} from 'react-native'
 
 import GiftedListView from 'react-native-gifted-listview'
 

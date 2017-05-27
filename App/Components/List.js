@@ -12,6 +12,8 @@ import {
 
 import * as endpoints from '../Network/endpoints.js'
 import RefreshableListView from './RefreshableListView'
+import Header from './Header'
+import {Colors, Fonts} from '../Themes/'
 
 const PAGE_SIZE = 20
 
@@ -22,9 +24,10 @@ export default class List extends Component {
 
   render() {
     return (
-      <RefreshableListView renderRow={(row) => this.renderListViewRow(row)}
-                           onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
-                           backgroundColor={'#F6F6EF'}/>
+        <RefreshableListView renderRow={(row) => this.renderListViewRow(row)}
+                             renderHeader={() => <Header text={this.props.text}/>}
+                             onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
+                             backgroundColor={'#F6F6EF'}/>
     )
   }
 
@@ -90,21 +93,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  toolbar: {
-    height: 56,
-    backgroundColor: 'purple'
-  },
   rowContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  rowCount: {
-    fontSize: 20,
-    textAlign: 'right',
-    color: 'gray',
-    margin: 10,
-    marginLeft: 15,
   },
   rowDetailsContainerFlex: {
     flex: 1,
@@ -118,36 +110,36 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   rowTitleRank: {
-    fontSize: 14,
-    color: 'gray',
+    fontSize: Fonts.size.medium,
+    color: Colors.text,
   },
   rowTitle: {
-    fontSize: 14,
-    color: 'gray',
+    fontSize: Fonts.size.medium,
+    color: Colors.text,
     flex: 3,
   },
   rowTitleRight: {
-    fontSize: 14,
-    color: 'gray',
+    fontSize: Fonts.size.medium,
+    color: Colors.text,
     flex: 1.5,
   },
   rowDetailsLine: {
-    fontSize: 14,
+    fontSize: Fonts.size.medium,
   },
   rowDetailsGreen: {
-    fontSize: 14,
+    fontSize: Fonts.size.medium,
     justifyContent: 'flex-end',
     color: 'green',
     flex: 1,
   },
   rowDetailsRed: {
-    fontSize: 14,
+    fontSize: Fonts.size.medium,
     justifyContent: 'flex-end',
     color: 'red',
     flex: 1
   },
   separator: {
     height: 1,
-    backgroundColor: '#CCCCCC'
+    backgroundColor: Colors.separator
   }
 });
