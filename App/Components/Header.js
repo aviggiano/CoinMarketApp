@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import {Colors, Fonts} from '../Themes/'
 
@@ -14,6 +15,10 @@ export default class Header extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor={Colors.darkMain}
+          barStyle="light-content"
+        />
         <Text style={styles.text}>
           {this.props.text}
         </Text>

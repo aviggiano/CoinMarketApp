@@ -2,6 +2,7 @@
 
 const colors = {
   main: '#800080',
+  darkMain: '#600060',
   headerBackground: '#800080',
   headerText: '#FFFFFF',
   text: '#808080',
