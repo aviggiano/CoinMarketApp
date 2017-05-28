@@ -20,19 +20,30 @@ const PAGE_SIZE = 20
 export default class List extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      currency: 'BRL'
+    }
   }
 
   render() {
     return (
-        <RefreshableListView renderRow={(row) => this.renderListViewRow(row)}
-                             renderHeader={() => <Header text={this.props.text}/>}
-                             onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
-                             backgroundColor={Colors.clair}/>
+      <RefreshableListView
+        key={this.state.currency}
+        renderRow={(row) => this.renderListViewRow(row)}
+        renderHeader={() => <Header text={this.props.text}
+                                    selectedValue={this.state.currency}
+                                    onValueChange={(item) => this.onHeaderValueChange(item)}/>}
+        onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
+        backgroundColor={Colors.clair}/>
     )
   }
 
+  onHeaderValueChange(item) {
+    this.setState({currency: item})
+  }
+
   formatCurrency(numberString) {
-    return `R$ ${parseFloat(numberString).toFixed(2)}`
+    return `${this.state.currency} ${parseFloat(numberString).toFixed(2)}`
   }
 
   getStylePercent(numberString) {
@@ -41,8 +52,7 @@ export default class List extends Component {
 
   renderListViewRow(row) {
     return (
-      <TouchableHighlight underlayColor={'#f3f3f2'}
-                          onPress={() => console.log(`pressed row ${row}`)}>
+      <TouchableHighlight underlayColor={Colors.press}>
         <View style={styles.rowContainer}>
           <Text>
             {"  "}
@@ -54,7 +64,7 @@ export default class List extends Component {
             {"  "}
           </Text>
           <Image style={{width: 32, height: 32}}
-                 source={{uri: `https://files.coinmarketcap.com/static/img/coins/32x32/${row.id}.png`}}
+                 source={{uri: `${endpoints.CMC_IMAGES}${row.id}.png`}}
           />
           <Text>
             {"  "}
@@ -65,7 +75,7 @@ export default class List extends Component {
                 {`${row.name} (${row.symbol})`}
               </Text>
               <Text style={styles.rowTitleRight}>
-                {this.formatCurrency(row.price_brl)}
+                {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
               </Text>
               <Text style={this.getStylePercent(row.percent_change_24h)}>
                 {`${row.percent_change_24h}%`}
@@ -80,7 +90,7 @@ export default class List extends Component {
 
   listViewOnRefresh(pageCount, callback, endpoint) {
     const items = PAGE_SIZE * pageCount
-    fetch(endpoint + items)
+    fetch(`${endpoint}${items}&convert=${this.state.currency}`)
       .then((response) => response.json())
       .then(array => {
         callback(array.slice(-PAGE_SIZE))

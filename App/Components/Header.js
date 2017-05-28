@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Picker,
   StatusBar,
 } from 'react-native';
 import {Colors, Fonts} from '../Themes/'
@@ -22,6 +23,16 @@ export default class Header extends React.Component {
         <Text style={styles.text}>
           {this.props.text}
         </Text>
+
+        <Picker
+          style={styles.text}
+          selectedValue={this.props.selectedValue}
+          onValueChange={(item) => {
+            this.props.onValueChange(item)
+          }}>
+          <Picker.Item label="BRL" value="BRL"/>
+          <Picker.Item label="USD" value="USD"/>
+        </Picker>
       </View>
     )
   }
@@ -30,8 +41,8 @@ export default class Header extends React.Component {
 const styles = StyleSheet.create({
   container: {
     padding: 13,
-    flexDirection: 'row',
-    alignItems: 'center',
+    // flexDirection: 'row',
+    // alignItems: 'center',
     backgroundColor: Colors.headerBackground,
   },
   text: Object.assign({color: Colors.headerText}, Fonts.style.h6),
