@@ -7,6 +7,7 @@ import {
   StatusBar,
 } from 'react-native';
 import {Colors, Fonts} from '../Themes/'
+import currencies from '../Data/currencies.json'
 
 export default class Header extends React.Component {
   constructor(props) {
@@ -30,8 +31,7 @@ export default class Header extends React.Component {
           onValueChange={(item) => {
             this.props.onValueChange(item)
           }}>
-          <Picker.Item label="BRL" value="BRL"/>
-          <Picker.Item label="USD" value="USD"/>
+          { currencies.map(currency => <Picker.Item label={currency} value={currency}/>) }
         </Picker>
       </View>
     )

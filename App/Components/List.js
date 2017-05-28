@@ -14,6 +14,7 @@ import * as endpoints from '../Network/endpoints.js'
 import RefreshableListView from './RefreshableListView'
 import Header from './Header'
 import {Colors, Fonts} from '../Themes/'
+import currencies from '../Data/currencies.json'
 
 const PAGE_SIZE = 20
 
@@ -21,7 +22,7 @@ export default class List extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      currency: 'BRL'
+      currency: currencies[0]
     }
   }
 
