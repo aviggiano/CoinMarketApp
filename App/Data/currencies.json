@@ -1,18 +1,66 @@
 [
-  "USD",
-  "BTC",
-  "AUD",
-  "BRL",
-  "CAD",
-  "CHF",
-  "CNY",
-  "EUR",
-  "GBP",
-  "HKD",
-  "IDR",
-  "INR",
-  "JPY",
-  "KRW",
-  "MXN",
-  "RUB"
+  {
+    "name": "USD",
+    "format": "$"
+  },
+  {
+    "name": "BTC",
+    "format": "BTC"
+  },
+  {
+    "name": "AUD",
+    "format": "$"
+  },
+  {
+    "name": "BRL",
+    "format": "R$"
+  },
+  {
+    "name": "CAD",
+    "format": "$"
+  },
+  {
+    "name": "CHF",
+    "format": "Fr"
+  },
+  {
+    "name": "CNY",
+    "format": "¥"
+  },
+  {
+    "name": "EUR",
+    "format": "€"
+  },
+  {
+    "name": "GBP",
+    "format": "£"
+  },
+  {
+    "name": "HKD",
+    "format": "$"
+  },
+  {
+    "name": "IDR",
+    "format": "Rp"
+  },
+  {
+    "name": "INR",
+    "format": "₹"
+  },
+  {
+    "name": "JPY",
+    "format": "¥"
+  },
+  {
+    "name": "KRW",
+    "format": "₩"
+  },
+  {
+    "name": "MXN",
+    "format": "$"
+  },
+  {
+    "name": "RUB",
+    "format": "₽"
+  }
 ]

@@ -29,21 +29,17 @@ export default class List extends Component {
   render() {
     return (
       <RefreshableListView
-        key={this.state.currency}
+        key={this.state.currency.name}
         renderRow={(row) => this.renderListViewRow(row)}
         renderHeader={() => <Header selectedValue={this.state.currency}
-                                    onValueChange={(item) => this.onHeaderValueChange(item)}/>}
+                                    onValueChange={(currency) => this.setState({currency})}/>}
         onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
         backgroundColor={Colors.clair}/>
     )
   }
 
-  onHeaderValueChange(item) {
-    this.setState({currency: item})
-  }
-
   formatCurrency(numberString) {
-    return `${this.state.currency} ${parseFloat(numberString).toFixed(2)}`
+    return `${this.state.currency.format} ${parseFloat(numberString).toFixed(2)}`
   }
 
   getStylePercent(numberString) {
@@ -75,7 +71,7 @@ export default class List extends Component {
                 {`${row.name} (${row.symbol})`}
               </Text>
               <Text style={styles.rowTitleRight}>
-                {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
+                {this.formatCurrency(row[`price_${this.state.currency.name.toLowerCase()}`])}
               </Text>
               <Text style={this.getStylePercent(row.percent_change_24h)}>
                 {`${row.percent_change_24h}%`}
@@ -90,7 +86,7 @@ export default class List extends Component {
 
   listViewOnRefresh(pageCount, callback, endpoint) {
     const items = PAGE_SIZE * pageCount
-    fetch(`${endpoint}${items}&convert=${this.state.currency}`)
+    fetch(`${endpoint}${items}&convert=${this.state.currency.name}`)
       .then((response) => response.json())
       .then(array => {
         callback(array.slice(-PAGE_SIZE))

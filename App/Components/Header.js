@@ -35,7 +35,7 @@ export default class Header extends React.Component {
           }}>
           { currencies.map(currency => <Picker.Item
             style={styles.text}
-            label={currency} value={currency}/>) }
+            label={currency.name} value={currency}/>) }
         </Picker>
         <Text style={[{flex: 0.5}, styles.text]}>
           {"24h"}
