@@ -21,14 +21,14 @@ export default class Header extends React.Component {
           backgroundColor={Colors.darkMain}
           barStyle="light-content"
         />
-        <Text style={[{flex:0.3, padding:10}, styles.text]}>
+        <Text style={[{flex: 0.3, padding: 10}, styles.text]}>
           {"#"}
         </Text>
-        <Text style={[{flex:4.5, padding:10}, styles.text]}>
+        <Text style={[{flex: 4.5, padding: 10}, styles.text]}>
           {"Name"}
         </Text>
         <Picker
-          style={[{flex:2}, styles.text]}
+          style={[{flex: 2}, styles.text]}
           selectedValue={this.props.selectedValue}
           onValueChange={(item) => {
             this.props.onValueChange(item)
@@ -37,7 +37,7 @@ export default class Header extends React.Component {
             style={styles.text}
             label={currency} value={currency}/>) }
         </Picker>
-        <Text style={[{flex:1.5, padding:10}, styles.text]}>
+        <Text style={[{flex: 1.5, padding: 10}, styles.text]}>
           {"% 24h"}
         </Text>
       </View>
@@ -47,11 +47,8 @@ export default class Header extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    // padding: 11,
     flex: 1,
     flexDirection: 'row',
-    // justifyContent: 'flex-start',
-
     alignItems: 'flex-start',
     backgroundColor: Colors.headerBackground,
   },
