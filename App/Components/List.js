@@ -31,8 +31,7 @@ export default class List extends Component {
       <RefreshableListView
         key={this.state.currency}
         renderRow={(row) => this.renderListViewRow(row)}
-        renderHeader={() => <Header text={this.props.text}
-                                    selectedValue={this.state.currency}
+        renderHeader={() => <Header selectedValue={this.state.currency}
                                     onValueChange={(item) => this.onHeaderValueChange(item)}/>}
         onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
         backgroundColor={Colors.clair}/>
