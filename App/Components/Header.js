@@ -21,23 +21,21 @@ export default class Header extends React.Component {
           backgroundColor={Colors.darkMain}
           barStyle="light-content"
         />
-        <Text style={[{flex: 0.3}, styles.text]}>
+        <Text style={[styles.flex0p3, styles.text]}>
           {"#"}
         </Text>
-        <Text style={[{flex: 2}, styles.text]}>
+        <Text style={[styles.flex2, styles.text]}>
           {"Name"}
         </Text>
         <Picker
-          style={[{flex: 1.2}, styles.text]}
+          style={styles.picker}
           selectedValue={this.props.selectedValue}
-          onValueChange={(item) => {
-            this.props.onValueChange(item)
-          }}>
-          { currencies.map(currency => <Picker.Item
+          onValueChange={(item) => this.props.onValueChange(item)}>
+          { Object.keys(currencies).map(currency => <Picker.Item
             style={styles.text}
-            label={currency.name} value={currency}/>) }
+            label={currency} value={currency}/>) }
         </Picker>
-        <Text style={[{flex: 0.5}, styles.text]}>
+        <Text style={[styles.flex0p5, styles.text]}>
           {"24h"}
         </Text>
       </View>
@@ -53,4 +51,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.headerBackground,
   },
   text: Object.assign({}, {color: Colors.headerText, padding: 10}, Fonts.style.h6),
+  picker: Object.assign({}, {flex: 1.2}, {color: Colors.headerText, padding: 10}),
+  flex0p3: {flex: 0.3},
+  flex2: {flex: 2},
+  flex0p5: {flex: 0.5},
 })

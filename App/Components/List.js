@@ -17,29 +17,33 @@ import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
 const PAGE_SIZE = 20
+const DEFAULT_CURRENCY = 'USD'
 
 export default class List extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      currency: currencies[0]
+      currency: DEFAULT_CURRENCY
     }
+    this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
+    this.renderListViewRow = this.renderListViewRow.bind(this)
   }
 
   render() {
     return (
       <RefreshableListView
-        key={this.state.currency.name}
-        renderRow={(row) => this.renderListViewRow(row)}
-        renderHeader={() => <Header selectedValue={this.state.currency}
-                                    onValueChange={(currency) => this.setState({currency})}/>}
-        onRefresh={(page, callback) => this.listViewOnRefresh(page, callback, endpoints.CMC_COINS)}
+        key={this.state.currency}
+        renderRow={this.renderListViewRow}
+        renderHeader={() => <Header
+          selectedValue={this.state.currency}
+          onValueChange={(currency) => this.setState({currency})}/>}
+        onRefresh={this.listViewOnRefresh}
         backgroundColor={Colors.clair}/>
     )
   }
 
   formatCurrency(numberString) {
-    return `${this.state.currency.format} ${parseFloat(numberString).toFixed(2)}`
+    return `${currencies[this.state.currency]} ${parseFloat(numberString).toFixed(2)}`
   }
 
   getStylePercent(numberString) {
@@ -71,7 +75,7 @@ export default class List extends Component {
                 {`${row.name} (${row.symbol})`}
               </Text>
               <Text style={styles.rowTitleRight}>
-                {this.formatCurrency(row[`price_${this.state.currency.name.toLowerCase()}`])}
+                {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
               </Text>
               <Text style={this.getStylePercent(row.percent_change_24h)}>
                 {`${row.percent_change_24h}%`}
@@ -84,9 +88,9 @@ export default class List extends Component {
     )
   }
 
-  listViewOnRefresh(pageCount, callback, endpoint) {
+  listViewOnRefresh(pageCount, callback) {
     const items = PAGE_SIZE * pageCount
-    fetch(`${endpoint}${items}&convert=${this.state.currency.name}`)
+    fetch(`${endpoints.CMC_COINS}${items}&convert=${this.state.currency}`)
       .then((response) => response.json())
       .then(array => {
         callback(array.slice(-PAGE_SIZE))
@@ -137,13 +141,13 @@ const styles = StyleSheet.create({
     fontSize: Fonts.size.medium,
     justifyContent: 'flex-end',
     color: 'green',
-    flex: 1,
+    flex: 1.1,
   },
   rowDetailsRed: {
     fontSize: Fonts.size.medium,
     justifyContent: 'flex-end',
     color: 'red',
-    flex: 1
+    flex: 1.1
   },
   separator: {
     height: 1,

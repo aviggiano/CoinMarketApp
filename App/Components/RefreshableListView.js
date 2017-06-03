@@ -45,47 +45,43 @@ export default class RefreshableListView extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      renderRow: this.props.renderRow,
-      backgroundColor: this.props.backgroundColor ? this.props.backgroundColor : Colors.white,
-      renderHeader: this.props.renderHeader ? this.props.renderHeader : null,
-    }
-
     this.onRefresh = this.onRefresh.bind(this)
     this.renderHeaderView = this.renderHeaderView.bind(this)
     this.renderRow = this.renderRow.bind(this)
   }
 
   onRefresh(page = 1, callback, options) {
-    this.props.onRefresh(page, callback);
+    this.props.onRefresh(page, callback, options);
   }
 
-  renderRow(row) {
-    return this.state.renderRow(row);
+  renderRow(row, str) {
+    return this.props.renderRow(row, str);
   }
 
   render() {
     return (
-      <View style={[styles.container, {backgroundColor: this.state.backgroundColor}, this.props.style]}>
+      <View style={[styles.container, {backgroundColor: this.props.backgroundColor || Colors.white}, this.props.style]}>
         <View style={styles.navBarSpace}/>
-        <GiftedListView rowView={this.renderRow}
-                        onFetch={this.onRefresh}
-                        paginationAllLoadedView={this.renderPaginationAllLoadedView}
-                        paginationWaitingView={this.renderPaginationWaitingView}
-                        headerView={this.renderHeaderView}
-                        refreshableProgressBackgroundColor={Colors.clair}
-                        refreshableColors={[Colors.main]}
-                        customStyles={{
-                          refreshableView: {
-                            backgroundColor: this.state.backgroundColor,
-                            justifyContent: 'flex-end',
-                            paddingBottom: 12,
-                          },
-                          paginationView: {
-                            backgroundColor: this.state.backgroundColor,
-                            height: 60
-                          }
-                        }}/>
+        <GiftedListView
+          initialListSize={this.props.initialListSize}
+          rowView={this.renderRow}
+          onFetch={this.onRefresh}
+          paginationAllLoadedView={this.renderPaginationAllLoadedView}
+          paginationWaitingView={this.renderPaginationWaitingView}
+          headerView={this.renderHeaderView}
+          refreshableProgressBackgroundColor={Colors.clair}
+          refreshableColors={[Colors.main]}
+          customStyles={{
+            refreshableView: {
+              backgroundColor: this.props.backgroundColor || Colors.white,
+              justifyContent: 'flex-end',
+              paddingBottom: 12,
+            },
+            paginationView: {
+              backgroundColor: this.props.backgroundColor || Colors.white,
+              height: 60
+            }
+          }}/>
       </View>
     );
   }
@@ -108,7 +104,7 @@ export default class RefreshableListView extends Component {
   }
 
   renderHeaderView() {
-    if (this.state.renderHeader) {
+    if (this.props.renderHeader) {
       return this.props.renderHeader();
     }
     return (null);
