@@ -32,6 +32,7 @@ export default class Header extends React.Component {
           selectedValue={this.props.selectedValue}
           onValueChange={(item) => this.props.onValueChange(item)}>
           { Object.keys(currencies).map(currency => <Picker.Item
+            key={currency}
             style={styles.text}
             label={currency} value={currency}/>) }
         </Picker>

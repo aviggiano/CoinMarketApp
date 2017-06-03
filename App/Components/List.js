@@ -7,7 +7,8 @@ import {
   Text,
   Image,
   View,
-  TouchableHighlight
+  TouchableHighlight,
+  AsyncStorage
 } from 'react-native';
 
 import * as endpoints from '../Network/endpoints.js'
@@ -18,13 +19,16 @@ import currencies from '../Data/currencies.json'
 
 const PAGE_SIZE = 20
 const DEFAULT_CURRENCY = 'USD'
+const DEFAULT_CURRENCY_KEY = 'currency'
 
 export default class List extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       currency: DEFAULT_CURRENCY
     }
+    this.getCurrency()
     this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
     this.renderListViewRow = this.renderListViewRow.bind(this)
   }
@@ -36,10 +40,30 @@ export default class List extends Component {
         renderRow={this.renderListViewRow}
         renderHeader={() => <Header
           selectedValue={this.state.currency}
-          onValueChange={(currency) => this.setState({currency})}/>}
+          onValueChange={(currency) => this.persistCurrency(currency)}/>}
         onRefresh={this.listViewOnRefresh}
         backgroundColor={Colors.clair}/>
     )
+  }
+
+  async getCurrency() {
+    try {
+      const currency = await AsyncStorage.getItem(DEFAULT_CURRENCY_KEY)
+      if (currency !== null) {
+        this.setState({currency})
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async persistCurrency(currency) {
+    this.setState({currency})
+    try {
+      await AsyncStorage.setItem(DEFAULT_CURRENCY_KEY, currency);
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   formatCurrency(numberString) {
