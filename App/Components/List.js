@@ -91,6 +91,7 @@ export default class List extends Component {
       .then(array => {
         callback(array.slice(-PAGE_SIZE))
       })
+      .catch((err) => callback([]))
       .done()
   }
 }
