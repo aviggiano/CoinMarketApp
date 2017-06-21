@@ -19,6 +19,7 @@ import currencies from '../Data/currencies.json'
 
 const PAGE_SIZE = 20
 const DEFAULT_CURRENCY = 'USD'
+const DEFAULT_VARIATION = 'percent_change_24h'
 const DEFAULT_CURRENCY_KEY = 'currency'
 
 export default class List extends Component {
@@ -26,7 +27,8 @@ export default class List extends Component {
     super(props)
 
     this.state = {
-      currency: DEFAULT_CURRENCY
+      currency: DEFAULT_CURRENCY,
+      variation: DEFAULT_VARIATION
     }
     this.getCurrency()
     this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
@@ -38,9 +40,13 @@ export default class List extends Component {
       <RefreshableListView
         key={this.state.currency}
         renderRow={this.renderListViewRow}
-        renderHeader={() => <Header
+        renderHeader={() =>
+        <Header
           selectedValue={this.state.currency}
-          onValueChange={(currency) => this.persistCurrency(currency)}/>}
+          selectedValueVariation={this.state.variation}
+          onValueChange={(currency) => this.persistCurrency(currency)}
+          onValueChangeVariation={(period) => this.persistVariation(period)}
+        />}
         onRefresh={this.listViewOnRefresh}
         backgroundColor={Colors.clair}/>
     )
@@ -52,6 +58,15 @@ export default class List extends Component {
       if (currency !== null) {
         this.setState({currency})
       }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async persistVariation(period) {
+    this.setState({variation: period})
+    try {
+      await AsyncStorage.setItem(DEFAULT_VARIATION, period);
     } catch (error) {
       console.log(error)
     }
@@ -101,8 +116,8 @@ export default class List extends Component {
               <Text style={styles.rowCurrency}>
                 {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
               </Text>
-              <Text style={this.getStylePercent(row.percent_change_24h)}>
-                {`${row.percent_change_24h}%`}
+              <Text style={this.getStylePercent(row[this.state.variation])}>
+                {`${row[this.state.variation]}%`}
               </Text>
             </View>
             <View style={styles.separator}/>
