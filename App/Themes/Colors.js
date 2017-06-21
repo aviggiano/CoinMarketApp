@@ -8,7 +8,7 @@ const colors = {
   text: '#808080',
   separator: '#CCCCCC',
   clair: '#F6F6EF',
-  press: '#F3F3F2',
+  press: '#D1D1D0',
 
   black: '#000000',
   clear: 'rgba(0,0,0,0)',
