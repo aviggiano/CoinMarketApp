@@ -43,7 +43,7 @@ export default class List extends Component {
   render() {
     return (
       <RefreshableListView
-        key={this.state.currency}
+        key={`${this.state.currency}/${this.state.variation}`}
         renderRow={this.renderListViewRow}
         renderHeader={() =>
           <Header
@@ -125,7 +125,7 @@ export default class List extends Component {
           `${row.name} (${row.symbol})`,
           `is at`,
           `${this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}`,
-          `(${this.state.variation}% change 24h)`
+          `(${row[this.state.variation]}% change 24h)`
         ].join(' '),
         url: endpoints.GOOGLE_PLAY,
         subject: `Latest ${row.name} (${row.symbol}) price`
