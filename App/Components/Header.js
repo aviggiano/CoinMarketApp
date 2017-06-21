@@ -9,6 +9,10 @@ import {
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
+const VariationOptions = [
+  {value: 'percent_change_24h', label: '24h'},
+  {value: 'percent_change_7d', label: '7d'}
+]
 export default class Header extends React.Component {
   constructor(props) {
     super(props)
@@ -36,9 +40,15 @@ export default class Header extends React.Component {
             style={styles.text}
             label={currency} value={currency}/>) }
         </Picker>
-        <Text style={[styles.flex0p5, styles.text]}>
-          {"24h"}
-        </Text>
+        <Picker
+          style={styles.picker2}
+          selectedValue={this.props.selectedValueVariation}
+          onValueChange={(item) => this.props.onValueChangeVariation(item)}>
+          { VariationOptions.map(opt => <Picker.Item
+            key={opt.value}
+            style={styles.text}
+            label={opt.label} value={opt.value}/>) }
+        </Picker>
       </View>
     )
   }
@@ -53,6 +63,7 @@ const styles = StyleSheet.create({
   },
   text: Object.assign({}, {color: Colors.headerText, padding: 10}, Fonts.style.h6),
   picker: Object.assign({}, {flex: 1.2}, {color: Colors.headerText, padding: 10}),
+  picker2: Object.assign({}, {flex: 1}, {color: Colors.headerText, padding: 10}),
   flex0p3: {flex: 0.3},
   flex2: {flex: 2},
   flex0p5: {flex: 0.5},

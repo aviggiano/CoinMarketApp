@@ -22,16 +22,20 @@ import currencies from '../Data/currencies.json'
 
 const PAGE_SIZE = 20
 const DEFAULT_CURRENCY = 'USD'
-const DEFAULT_CURRENCY_KEY = 'currency'
+const STORAGE_KEY_CURRENCY = 'currency'
+const DEFAULT_VARIATION = 'percent_change_24h'
+const STORAGE_KEY_VARIATION = 'variation'
 
 export default class List extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      currency: DEFAULT_CURRENCY
+      currency: DEFAULT_CURRENCY,
+      variation: DEFAULT_VARIATION
     }
     this.getCurrency()
+    this.getVariation()
     this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
     this.renderListViewRow = this.renderListViewRow.bind(this)
   }
@@ -39,19 +43,34 @@ export default class List extends Component {
   render() {
     return (
       <RefreshableListView
-        key={this.state.currency}
+        key={`${this.state.currency}/${this.state.variation}`}
         renderRow={this.renderListViewRow}
-        renderHeader={() => <Header
-          selectedValue={this.state.currency}
-          onValueChange={(currency) => this.persistCurrency(currency)}/>}
+        renderHeader={() =>
+          <Header
+            selectedValue={this.state.currency}
+            selectedValueVariation={this.state.variation}
+            onValueChange={(currency) => this.persistCurrency(currency)}
+            onValueChangeVariation={(period) => this.persistVariation(period)}
+          />}
         onRefresh={this.listViewOnRefresh}
         backgroundColor={Colors.clair}/>
     )
   }
 
+  async getStorage(storageKey, stateKey) {
+    try {
+      const value = await AsyncStorage.getItem(storageKey)
+      if (value !== null) {
+        this.setState({[stateKey]: value})
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   async getCurrency() {
     try {
-      const currency = await AsyncStorage.getItem(DEFAULT_CURRENCY_KEY)
+      const currency = await AsyncStorage.getItem(STORAGE_KEY_CURRENCY)
       if (currency !== null) {
         this.setState({currency})
       }
@@ -60,10 +79,30 @@ export default class List extends Component {
     }
   }
 
+  async getVariation() {
+    try {
+      const variation = await AsyncStorage.getItem(STORAGE_KEY_VARIATION)
+      if (variation !== null) {
+        this.setState({variation})
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async persistVariation(variation) {
+    this.setState({variation})
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_VARIATION, variation);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   async persistCurrency(currency) {
     this.setState({currency})
     try {
-      await AsyncStorage.setItem(DEFAULT_CURRENCY_KEY, currency);
+      await AsyncStorage.setItem(STORAGE_KEY_CURRENCY, currency);
     } catch (error) {
       console.log(error)
     }
@@ -86,7 +125,7 @@ export default class List extends Component {
           `${row.name} (${row.symbol})`,
           `is at`,
           `${this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}`,
-          `(${row.percent_change_24h}% change 24h)`
+          `(${row[this.state.variation]}% change 24h)`
         ].join(' '),
         url: endpoints.GOOGLE_PLAY,
         subject: `Latest ${row.name} (${row.symbol}) price`
@@ -124,8 +163,8 @@ export default class List extends Component {
               <Text style={styles.rowCurrency}>
                 {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
               </Text>
-              <Text style={this.getStylePercent(row.percent_change_24h)}>
-                {`${row.percent_change_24h}%`}
+              <Text style={this.getStylePercent(row[this.state.variation])}>
+                {`${row[this.state.variation]}%`}
               </Text>
             </View>
             <View style={styles.separator}/>
