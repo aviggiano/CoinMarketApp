@@ -22,8 +22,9 @@ import currencies from '../Data/currencies.json'
 
 const PAGE_SIZE = 20
 const DEFAULT_CURRENCY = 'USD'
+const STORAGE_KEY_CURRENCY = 'currency'
 const DEFAULT_VARIATION = 'percent_change_24h'
-const DEFAULT_CURRENCY_KEY = 'currency'
+const STORAGE_KEY_VARIATION = 'variation'
 
 export default class List extends Component {
   constructor(props) {
@@ -34,6 +35,7 @@ export default class List extends Component {
       variation: DEFAULT_VARIATION
     }
     this.getCurrency()
+    this.getVariation()
     this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
     this.renderListViewRow = this.renderListViewRow.bind(this)
   }
@@ -44,20 +46,31 @@ export default class List extends Component {
         key={this.state.currency}
         renderRow={this.renderListViewRow}
         renderHeader={() =>
-        <Header
-          selectedValue={this.state.currency}
-          selectedValueVariation={this.state.variation}
-          onValueChange={(currency) => this.persistCurrency(currency)}
-          onValueChangeVariation={(period) => this.persistVariation(period)}
-        />}
+          <Header
+            selectedValue={this.state.currency}
+            selectedValueVariation={this.state.variation}
+            onValueChange={(currency) => this.persistCurrency(currency)}
+            onValueChangeVariation={(period) => this.persistVariation(period)}
+          />}
         onRefresh={this.listViewOnRefresh}
         backgroundColor={Colors.clair}/>
     )
   }
 
+  async getStorage(storageKey, stateKey) {
+    try {
+      const value = await AsyncStorage.getItem(storageKey)
+      if (value !== null) {
+        this.setState({[stateKey]: value})
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   async getCurrency() {
     try {
-      const currency = await AsyncStorage.getItem(DEFAULT_CURRENCY_KEY)
+      const currency = await AsyncStorage.getItem(STORAGE_KEY_CURRENCY)
       if (currency !== null) {
         this.setState({currency})
       }
@@ -66,10 +79,21 @@ export default class List extends Component {
     }
   }
 
-  async persistVariation(period) {
-    this.setState({variation: period})
+  async getVariation() {
     try {
-      await AsyncStorage.setItem(DEFAULT_VARIATION, period);
+      const variation = await AsyncStorage.getItem(STORAGE_KEY_VARIATION)
+      if (variation !== null) {
+        this.setState({variation})
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async persistVariation(variation) {
+    this.setState({variation})
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_VARIATION, variation);
     } catch (error) {
       console.log(error)
     }
@@ -78,7 +102,7 @@ export default class List extends Component {
   async persistCurrency(currency) {
     this.setState({currency})
     try {
-      await AsyncStorage.setItem(DEFAULT_CURRENCY_KEY, currency);
+      await AsyncStorage.setItem(STORAGE_KEY_CURRENCY, currency);
     } catch (error) {
       console.log(error)
     }
@@ -101,7 +125,7 @@ export default class List extends Component {
           `${row.name} (${row.symbol})`,
           `is at`,
           `${this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}`,
-          `(${row.percent_change_24h}% change 24h)`
+          `(${this.state.variation}% change 24h)`
         ].join(' '),
         url: endpoints.GOOGLE_PLAY,
         subject: `Latest ${row.name} (${row.symbol}) price`
