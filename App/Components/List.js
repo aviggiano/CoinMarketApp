@@ -8,14 +8,17 @@ import {
   Image,
   View,
   TouchableHighlight,
+  Vibration,
   AsyncStorage
 } from 'react-native';
 
+import Share from 'react-native-share'
 import * as endpoints from '../Network/endpoints.js'
 import RefreshableListView from './RefreshableListView'
 import Header from './Header'
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
+
 
 const PAGE_SIZE = 20
 const DEFAULT_CURRENCY = 'USD'
@@ -89,9 +92,29 @@ export default class List extends Component {
     return (parseFloat(numberString) > 0) ? styles.rowDetailsGreen : styles.rowDetailsRed
   }
 
+  shareSocial(row) {
+    const pattern = [75, 25, 75] // empirically imitating WhatsApp's vibration pattern
+    Vibration.vibrate(pattern)
+    Share
+      .open({
+        message: [
+          `${row.name} (${row.symbol})`,
+          `is at`,
+          `${this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}`,
+          `(${row.percent_change_24h}% change 24h)`
+        ].join(' '),
+        url: endpoints.GOOGLE_PLAY,
+        subject: `Latest ${row.name} (${row.symbol}) price`
+      })
+      .then((action) => console.log(action))
+      .catch((err) => console.log(err))
+  }
+
   renderListViewRow(row) {
     return (
-      <TouchableHighlight underlayColor={Colors.press}>
+      <TouchableHighlight
+        onLongPress={() => this.shareSocial(row)}
+        underlayColor={Colors.press}>
         <View style={styles.rowContainer}>
           <Text>
             {"  "}
@@ -172,7 +195,7 @@ const styles = StyleSheet.create({
   rowCurrency: {
     fontSize: Fonts.size.medium,
     color: Colors.text,
-    flex: 1.2,
+    flex: 1.4,
   },
   rowDetailsLine: {
     fontSize: Fonts.size.medium,
