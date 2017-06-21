@@ -9,7 +9,7 @@ import {
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
-const VariationOptions = [ { value: 'percent_change_24h', label: '24H' }, { value: 'percent_change_7d', label: '7D' }]
+const VariationOptions = [ { value: 'percent_change_24h', label: '24h' }, { value: 'percent_change_7d', label: '7d' }]
 export default class Header extends React.Component {
   constructor(props) {
     super(props)
