@@ -81,7 +81,7 @@ export default class List extends Component {
           <Text>
             {"  "}
           </Text>
-          <Text style={styles.rowTitleRank}>
+          <Text style={styles.rowRank}>
             {row.rank}
           </Text>
           <Text>
@@ -98,7 +98,7 @@ export default class List extends Component {
               <Text style={styles.rowTitle}>
                 {`${row.name} (${row.symbol})`}
               </Text>
-              <Text style={styles.rowTitleRight}>
+              <Text style={styles.rowCurrency}>
                 {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
               </Text>
               <Text style={this.getStylePercent(row.percent_change_24h)}>
@@ -144,8 +144,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginRight: 10,
   },
-  rowTitleRank: {
+  rowRank: {
     fontSize: Fonts.size.medium,
+    marginLeft: '1%',
     color: Colors.text,
   },
   rowTitle: {
@@ -153,23 +154,27 @@ const styles = StyleSheet.create({
     color: Colors.text,
     flex: 3,
   },
-  rowTitleRight: {
+  rowCurrency: {
     fontSize: Fonts.size.medium,
     color: Colors.text,
-    flex: 1.5,
+    flex: 1.2,
   },
   rowDetailsLine: {
     fontSize: Fonts.size.medium,
   },
   rowDetailsGreen: {
     fontSize: Fonts.size.medium,
+    textAlign: 'right',
     justifyContent: 'flex-end',
+    marginRight: '10%',
     color: 'green',
     flex: 1.1,
   },
   rowDetailsRed: {
     fontSize: Fonts.size.medium,
+    textAlign: 'right',
     justifyContent: 'flex-end',
+    marginRight: '10%',
     color: 'red',
     flex: 1.1
   },
