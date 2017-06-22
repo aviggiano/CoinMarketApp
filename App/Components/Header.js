@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.headerBackground,
   },
   text: Object.assign({}, {color: Colors.headerText, padding: 10}, Fonts.style.h6),
-  picker: Object.assign({}, {flex: 1.2}, {color: Colors.headerText, padding: 10}),
-  picker2: Object.assign({}, {flex: 1}, {color: Colors.headerText, padding: 10}),
+  picker: Object.assign({}, {flex: 1.3}, {color: Colors.headerText, padding: 10}),
+  picker2: Object.assign({}, {flex: 1.2}, {color: Colors.headerText, padding: 10}),
   flex0p3: {flex: 0.3},
-  flex2: {flex: 2},
+  flex2: {flex: 1.9},
   flex0p5: {flex: 0.5},
 })
