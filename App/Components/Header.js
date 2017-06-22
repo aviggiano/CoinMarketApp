@@ -8,11 +8,8 @@ import {
 } from 'react-native';
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
+import variations from '../Data/variations.json'
 
-const VariationOptions = [
-  {value: 'percent_change_24h', label: '24h'},
-  {value: 'percent_change_7d', label: '7d'}
-]
 export default class Header extends React.Component {
   constructor(props) {
     super(props)
@@ -44,7 +41,7 @@ export default class Header extends React.Component {
           style={styles.picker2}
           selectedValue={this.props.selectedValueVariation}
           onValueChange={(item) => this.props.onValueChangeVariation(item)}>
-          { VariationOptions.map(opt => <Picker.Item
+          { variations.map(opt => <Picker.Item
             key={opt.value}
             style={styles.text}
             label={opt.label} value={opt.value}/>) }

@@ -1,0 +1,10 @@
+[
+  {
+    "value": "percent_change_24h",
+    "label": "24h"
+  },
+  {
+    "value": "percent_change_7d",
+    "label": "7d"
+  }
+]
