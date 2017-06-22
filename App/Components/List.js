@@ -20,7 +20,7 @@ import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 100
 const DEFAULT_CURRENCY = 'USD'
 const STORAGE_KEY_CURRENCY = 'currency'
 const DEFAULT_VARIATION = 'percent_change_24h'
