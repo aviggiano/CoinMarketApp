@@ -125,7 +125,7 @@ export default class List extends Component {
           `${row.name} (${row.symbol})`,
           `is at`,
           `${this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}`,
-          `(${row[this.state.variation]}% change 24h)`
+          `(${row[this.state.variation]}% change 24h).`
         ].join(' '),
         url: endpoints.GOOGLE_PLAY,
         subject: `Latest ${row.name} (${row.symbol}) price`
