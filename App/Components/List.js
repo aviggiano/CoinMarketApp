@@ -41,6 +41,10 @@ export default class List extends Component {
     this.getDataConstructor()
   }
 
+  static navigationOptions = ({navigation}) => ({
+    header: <Header/>,
+  })
+
   render() {
     return (
       <ScrollView>
