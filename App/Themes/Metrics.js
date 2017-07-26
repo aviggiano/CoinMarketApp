@@ -2,10 +2,18 @@
 
 import {Dimensions, Platform} from 'react-native'
 
-const { width, height } = Dimensions.get('window')
+const {width, height} = Dimensions.get('window')
 
 // Used via Metrics.baseMargin
 const metrics = {
+  headerHeight: Platform.select({
+    ios: 52,
+    android: 62
+  }),
+  padding: Platform.select({
+    ios: 52/2,
+    android: 62/2
+  }),
   marginHorizontal: 10,
   marginVertical: 10,
   section: 25,

@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 
 import Share from 'react-native-share'
+import idx from 'idx'
+
 import * as endpoints from '../Network/endpoints.js'
 import Header from './Header'
 import {Colors, Fonts} from '../Themes/'
@@ -41,8 +43,23 @@ export default class List extends Component {
     this.getDataConstructor()
   }
 
+  componentDidMount() {
+    this.props.navigation.setParams({
+      currency: this.state.currency,
+      variation: this.state.variation,
+      persistCurrency: this.persistCurrency.bind(this),
+      persistVariation: this.persistVariation.bind(this),
+    })
+  }
+
+
   static navigationOptions = ({navigation}) => ({
-    header: <Header/>,
+    header: <Header
+      selectedValue={idx(navigation, _ => navigation.state.params.currency)}
+      selectedValueVariation={idx(navigation, _ => navigation.state.params.variation)}
+      onValueChange={(currency) => idx(navigation, _ => navigation.state.params.persistCurrency(currency))}
+      onValueChangeVariation={(variation) => idx(navigation, _ => navigation.state.params.persistCurrency(variation))}
+    />,
   })
 
   render() {
