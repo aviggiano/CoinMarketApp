@@ -8,19 +8,18 @@ import {
   Image,
   View,
   TouchableHighlight,
+  ScrollView,
+  FlatList,
   Vibration,
   AsyncStorage
 } from 'react-native';
 
 import Share from 'react-native-share'
 import * as endpoints from '../Network/endpoints.js'
-import RefreshableListView from './RefreshableListView'
 import Header from './Header'
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
-
-const PAGE_SIZE = 100
 const DEFAULT_CURRENCY = 'USD'
 const STORAGE_KEY_CURRENCY = 'currency'
 const DEFAULT_VARIATION = 'percent_change_24h'
@@ -32,28 +31,27 @@ export default class List extends Component {
 
     this.state = {
       currency: DEFAULT_CURRENCY,
-      variation: DEFAULT_VARIATION
+      variation: DEFAULT_VARIATION,
+      refreshing: true,
+      data: []
     }
-    this.getCurrency()
-    this.getVariation()
-    this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
-    this.renderListViewRow = this.renderListViewRow.bind(this)
+    this.getData = this.getData.bind(this)
+    this.renderItem = this.renderItem.bind(this)
+
+    this.getDataConstructor()
   }
 
   render() {
     return (
-      <RefreshableListView
-        key={`${this.state.currency}/${this.state.variation}`}
-        renderRow={this.renderListViewRow}
-        renderHeader={() =>
-          <Header
-            selectedValue={this.state.currency}
-            selectedValueVariation={this.state.variation}
-            onValueChange={(currency) => this.persistCurrency(currency)}
-            onValueChangeVariation={(period) => this.persistVariation(period)}
-          />}
-        onRefresh={this.listViewOnRefresh}
-        backgroundColor={Colors.clair}/>
+      <ScrollView>
+        <FlatList
+          data={this.state.data}
+          refreshing={this.state.refreshing}
+          renderItem={this.renderItem}
+          keyExtractor={(item, index) => item.id}
+          onRefresh={this.getData}
+        />
+      </ScrollView>
     )
   }
 
@@ -134,55 +132,60 @@ export default class List extends Component {
       .catch((err) => console.log(err))
   }
 
-  renderListViewRow(row) {
+  renderItem({item}) {
     return (
       <TouchableHighlight
-        onLongPress={() => this.shareSocial(row)}
+        onLongPress={() => this.shareSocial(item)}
         underlayColor={Colors.press}>
-        <View style={styles.rowContainer}>
-          <Text>
-            {"  "}
-          </Text>
-          <Text style={styles.rowRank}>
-            {row.rank}
-          </Text>
-          <Text>
-            {"  "}
-          </Text>
-          <Image style={{width: 32, height: 32}}
-                 source={{uri: `${endpoints.CMC_IMAGES}${row.id}.png`}}
-          />
-          <Text>
-            {"  "}
-          </Text>
-          <View style={styles.rowDetailsContainerFlex}>
-            <View style={styles.rowDetailsContainer}>
-              <Text style={styles.rowTitle}>
-                {`${row.name} (${row.symbol})`}
-              </Text>
-              <Text style={styles.rowCurrency}>
-                {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
-              </Text>
-              <Text style={this.getStylePercent(row[this.state.variation])}>
-                {`${row[this.state.variation]}%`}
-              </Text>
+        <View>
+          <View style={styles.separator}/>
+          <View style={styles.rowContainer}>
+            <Text>
+              {"  "}
+            </Text>
+            <Text style={styles.rowRank}>
+              {item.rank}
+            </Text>
+            <Text>
+              {"  "}
+            </Text>
+            <Image style={styles.image}
+                   source={{uri: `${endpoints.CMC_IMAGES}${item.id}.png`}}
+            />
+            <Text>
+              {"  "}
+            </Text>
+            <View style={styles.rowDetailsContainerFlex}>
+              <View style={styles.rowDetailsContainer}>
+                <Text style={styles.rowTitle}>
+                  {`${item.name} (${item.symbol})`}
+                </Text>
+                <Text style={styles.rowCurrency}>
+                  {this.formatCurrency(item[`price_${this.state.currency.toLowerCase()}`])}
+                </Text>
+                <Text style={this.getStylePercent(item[this.state.variation])}>
+                  {`${item[this.state.variation]}%`}
+                </Text>
+              </View>
             </View>
-            <View style={styles.separator}/>
           </View>
         </View>
       </TouchableHighlight>
     )
   }
 
-  listViewOnRefresh(pageCount, callback) {
-    const items = PAGE_SIZE * pageCount
-    fetch(`${endpoints.CMC_COINS}${items}&convert=${this.state.currency}`)
-      .then((response) => response.json())
-      .then(array => {
-        callback(array.slice(-PAGE_SIZE))
-      })
-      .catch((err) => callback([]))
+  getData() {
+    const refreshing = !this.state.refreshing
+
+    fetch(`${endpoints.CMC_COINS}?convert=${this.state.currency}`)
+      .then((response) => response.json()).catch(() => this.setState({refreshing}))
+      .then(data => this.setState({data, refreshing}))
       .done()
+  }
+
+  async getDataConstructor() {
+    await Promise.all([this.getCurrency(), this.getVariation()])
+    this.getData()
   }
 }
 
@@ -243,5 +246,9 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: Colors.separator
+  },
+  image: {
+    width: 32,
+    height: 32
   }
 });
