@@ -11,15 +11,16 @@ import {
   ScrollView,
   FlatList,
   Vibration,
+  StatusBar,
   AsyncStorage
 } from 'react-native';
 
 import Share from 'react-native-share'
-import idx from 'idx'
+import SearchBar from 'react-native-searchbar'
 
 import * as endpoints from '../Network/endpoints.js'
 import Header from './Header'
-import {Colors, Fonts} from '../Themes/'
+import {Colors, Fonts, Metrics} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
 const DEFAULT_CURRENCY = 'USD'
@@ -35,56 +36,87 @@ export default class List extends Component {
       currency: DEFAULT_CURRENCY,
       variation: DEFAULT_VARIATION,
       refreshing: true,
-      data: []
+      isSearching: false,
+      data: [],
+      dataVisible: []
     }
     this.getData = this.getData.bind(this)
     this.renderItem = this.renderItem.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
+    this.toggleSearchBar = this.toggleSearchBar.bind(this)
+    this.clearInput = this.clearInput.bind(this)
+    this.persistCurrency = this.persistCurrency.bind(this)
+    this.persistVariation = this.persistVariation.bind(this)
 
     this.getDataConstructor()
   }
 
-  componentDidMount() {
-    this.props.navigation.setParams({
-      currency: this.state.currency,
-      variation: this.state.variation,
-      persistCurrency: this.persistCurrency.bind(this),
-      persistVariation: this.persistVariation.bind(this),
-    })
+  toggleSearchBar() {
+    const isSearching = !this.state.isSearching
+    this.setState({isSearching})
+    if (!isSearching) {
+      this.clearInput()
+    }
   }
 
+  handleSearch(input) {
+    const inputLower = input.toLowerCase()
+    const dataVisible = this.state.data.filter((object) => (
+      object.name.toLowerCase().indexOf(inputLower) > -1 ||
+      object.symbol.toLowerCase().indexOf(inputLower) > -1
+    ))
+    this.setState({dataVisible})
+  }
 
-  static navigationOptions = ({navigation}) => ({
-    header: <Header
-      selectedValue={idx(navigation, _ => navigation.state.params.currency)}
-      selectedValueVariation={idx(navigation, _ => navigation.state.params.variation)}
-      onValueChange={(currency) => idx(navigation, _ => navigation.state.params.persistCurrency(currency))}
-      onValueChangeVariation={(variation) => idx(navigation, _ => navigation.state.params.persistCurrency(variation))}
-    />,
-  })
+  clearInput() {
+    this.searchBar._clearInput()
+  }
 
-  render() {
-    return (
-      <ScrollView>
-        <FlatList
+  renderHeader() {
+    return this.state.isSearching ? (
+      <View style={styles.search}>
+        <SearchBar
           data={this.state.data}
-          refreshing={this.state.refreshing}
-          renderItem={this.renderItem}
-          keyExtractor={(item, index) => item.id}
-          onRefresh={this.getData}
+          ref={(ref) => this.searchBar = ref}
+          handleSearch={this.handleSearch}
+          onBack={this.toggleSearchBar}
+          onX={this.clearInput}
+          allDataOnEmptySearch
+          showOnLoad
         />
-      </ScrollView>
+      </View>
+    ) : (
+      <Header
+        selectedValue={this.state.currency}
+        selectedValueVariation={this.state.variation}
+        onValueChange={this.persistCurrency}
+        onValueChangeVariation={this.persistVariation}
+        toggleSearchBar={this.toggleSearchBar}
+      />
     )
   }
 
-  async getStorage(storageKey, stateKey) {
-    try {
-      const value = await AsyncStorage.getItem(storageKey)
-      if (value !== null) {
-        this.setState({[stateKey]: value})
-      }
-    } catch (error) {
-      console.log(error)
-    }
+
+  render() {
+    console.log(this.state.dataVisible.length)
+    return (
+      <View>
+        <StatusBar
+          backgroundColor={Colors.darkMain}
+          barStyle="light-content"
+        />
+        {this.renderHeader()}
+        <ScrollView>
+          <FlatList
+            data={this.state.dataVisible}
+            refreshing={this.state.refreshing}
+            renderItem={this.renderItem}
+            keyExtractor={(item, index) => item.id}
+            onRefresh={this.getData}
+          />
+        </ScrollView>
+      </View>
+    )
   }
 
   async getCurrency() {
@@ -198,9 +230,9 @@ export default class List extends Component {
   getData() {
     const refreshing = !this.state.refreshing
 
-    fetch(`${endpoints.CMC_COINS}?convert=${this.state.currency}`)
+    fetch(`${endpoints.CMC_COINS}?convert=${this.state.currency}&limit=20`)
       .then((response) => response.json()).catch(() => this.setState({refreshing}))
-      .then(data => this.setState({data, refreshing}))
+      .then(data => this.setState({data, refreshing, dataVisible: data}))
       .done()
   }
 
@@ -271,5 +303,6 @@ const styles = StyleSheet.create({
   image: {
     width: 32,
     height: 32
-  }
+  },
+  search: {paddingBottom: Metrics.headerHeight}
 });

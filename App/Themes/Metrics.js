@@ -14,6 +14,7 @@ const metrics = {
     ios: 52/2,
     android: 62/2
   }),
+  buttonSize: 32,
   marginHorizontal: 10,
   marginVertical: 10,
   section: 25,

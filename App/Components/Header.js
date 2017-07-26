@@ -3,13 +3,13 @@ import {
   View,
   Text,
   StyleSheet,
-  Platform,
+  TouchableOpacity,
   Picker,
-  StatusBar,
 } from 'react-native';
 import {Colors, Fonts, Metrics} from '../Themes/'
 import currencies from '../Data/currencies.json'
 import variations from '../Data/variations.json'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default class Header extends React.Component {
   constructor(props) {
@@ -19,16 +19,19 @@ export default class Header extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor={Colors.darkMain}
-          barStyle="light-content"
-        />
         <Text style={[styles.flex0p3, styles.text]}>
           {"#"}
         </Text>
         <Text style={[styles.flex2, styles.text]}>
           {"Name"}
         </Text>
+        <TouchableOpacity
+          onPress={() => this.props.toggleSearchBar()}>
+          <Icon
+            name='search'
+            size={Metrics.buttonSize}
+            style={styles.icon}/>
+        </TouchableOpacity>
         <Picker
           style={styles.picker}
           selectedValue={this.props.selectedValue}
@@ -77,4 +80,5 @@ const styles = StyleSheet.create({
   flex0p3: {flex: 0.3},
   flex2: {flex: 1.9},
   flex0p5: {flex: 0.5},
+  icon: {color: Colors.headerText, paddingTop: Metrics.padding/2, paddingRight: Metrics.padding/2}
 })
