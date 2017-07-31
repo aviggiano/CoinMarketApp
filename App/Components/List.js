@@ -9,6 +9,7 @@ import {
   View,
   TouchableHighlight,
   FlatList,
+  ScrollView,
   Vibration,
   StatusBar,
   AsyncStorage
@@ -19,7 +20,7 @@ import SearchBar from 'react-native-searchbar'
 
 import * as endpoints from '../Network/endpoints.js'
 import Header from './Header'
-import {Colors, Fonts, Metrics} from '../Themes/'
+import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
 const DEFAULT_CURRENCY = 'USD'
@@ -111,13 +112,15 @@ export default class List extends Component {
         />
         {this.renderHeader()}
         {this.renderSearchBar()}
-        <FlatList
-          data={this.state.dataVisible}
-          // refreshing={this.state.refreshing}
-          renderItem={this.renderItem}
-          keyExtractor={(item, index) => item.id}
-          // onRefresh={this.getData}
-        />
+        <ScrollView>
+          <FlatList
+            data={this.state.dataVisible}
+            refreshing={this.state.refreshing}
+            renderItem={this.renderItem}
+            keyExtractor={(item, index) => item.id}
+            onRefresh={this.getData}
+          />
+        </ScrollView>
       </View>
     )
   }
@@ -151,17 +154,16 @@ export default class List extends Component {
     } catch (error) {
       console.log(error)
     }
-    return this.getData()
+    return this.getData({variation})
   }
 
   async persistCurrency(currency) {
-    this.setState({currency})
     try {
       await AsyncStorage.setItem(STORAGE_KEY_CURRENCY, currency);
     } catch (error) {
       console.log(error)
     }
-    return this.getData()
+    return this.getData({currency})
   }
 
   formatCurrency(numberString) {
@@ -232,18 +234,19 @@ export default class List extends Component {
     )
   }
 
-  async getData() {
-    const refreshing = !this.state.refreshing
+  async getData(state) {
+    state = state || {}
+    const currency = state.currency || this.state.currency
 
-    return fetch(`${endpoints.CMC_COINS}?convert=${this.state.currency}&limit=20`)
-      .then((response) => response.json()).catch(() => this.setState({refreshing}))
-      .then(data => this.setState({data, refreshing, dataVisible: data}))
+    return fetch(`${endpoints.CMC_COINS}?convert=${currency}&limit=20`)
+      .then((response) => response.json()).catch(() => this.setState(state))
+      .then(data => this.setState({data, dataVisible: data, ...state}))
       .done()
   }
 
   async getDataConstructor() {
     await Promise.all([this.getCurrency(), this.getVariation()])
-    this.getData().done()
+    this.getData({refreshing: false}).done()
   }
 }
 
