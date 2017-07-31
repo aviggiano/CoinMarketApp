@@ -238,7 +238,7 @@ export default class List extends Component {
     state = state || {}
     const currency = state.currency || this.state.currency
 
-    return fetch(`${endpoints.CMC_COINS}?convert=${currency}&limit=20`)
+    return fetch(`${endpoints.CMC_COINS}?convert=${currency}`)
       .then((response) => response.json()).catch(() => this.setState(state))
       .then(data => this.setState({data, dataVisible: data, ...state}))
       .done()
