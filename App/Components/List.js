@@ -8,7 +8,6 @@ import {
   Image,
   View,
   TouchableHighlight,
-  ScrollView,
   FlatList,
   Vibration,
   StatusBar,
@@ -35,8 +34,8 @@ export default class List extends Component {
     this.state = {
       currency: DEFAULT_CURRENCY,
       variation: DEFAULT_VARIATION,
-      refreshing: true,
       isSearching: false,
+      refreshing: true,
       data: [],
       dataVisible: []
     }
@@ -44,19 +43,23 @@ export default class List extends Component {
     this.renderItem = this.renderItem.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
     this.toggleSearchBar = this.toggleSearchBar.bind(this)
-    this.clearInput = this.clearInput.bind(this)
+    this.onX = this.onX.bind(this)
     this.persistCurrency = this.persistCurrency.bind(this)
     this.persistVariation = this.persistVariation.bind(this)
 
-    this.getDataConstructor()
+    this.getDataConstructor().done()
+  }
+
+  onX() {
+    this.searchBar._clearInput()
   }
 
   toggleSearchBar() {
     const isSearching = !this.state.isSearching
-    this.setState({isSearching})
     if (!isSearching) {
-      this.clearInput()
+      this.onX()
     }
+    this.setState({isSearching})
   }
 
   handleSearch(input) {
@@ -68,24 +71,8 @@ export default class List extends Component {
     this.setState({dataVisible})
   }
 
-  clearInput() {
-    this.searchBar._clearInput()
-  }
-
   renderHeader() {
-    return this.state.isSearching ? (
-      <View style={styles.search}>
-        <SearchBar
-          data={this.state.data}
-          ref={(ref) => this.searchBar = ref}
-          handleSearch={this.handleSearch}
-          onBack={this.toggleSearchBar}
-          onX={this.clearInput}
-          allDataOnEmptySearch
-          showOnLoad
-        />
-      </View>
-    ) : (
+    return (
       <Header
         selectedValue={this.state.currency}
         selectedValueVariation={this.state.variation}
@@ -96,9 +83,26 @@ export default class List extends Component {
     )
   }
 
+  renderSearchBar() {
+    return this.state.isSearching ? (
+      <SearchBar
+        style={styles.style}
+        data={this.state.data}
+        handleSearch={this.handleSearch}
+        onBack={this.toggleSearchBar}
+        ref={(ref) => this.searchBar = ref}
+        onX={this.onX}
+        allDataOnEmptySearch
+        clearOnBlur
+        clearOnHide
+        clearOnShow
+        showOnLoad
+      />
+    ) : null
+  }
+
 
   render() {
-    console.log(this.state.dataVisible.length)
     return (
       <View>
         <StatusBar
@@ -106,15 +110,14 @@ export default class List extends Component {
           barStyle="light-content"
         />
         {this.renderHeader()}
-        <ScrollView>
-          <FlatList
-            data={this.state.dataVisible}
-            refreshing={this.state.refreshing}
-            renderItem={this.renderItem}
-            keyExtractor={(item, index) => item.id}
-            onRefresh={this.getData}
-          />
-        </ScrollView>
+        {this.renderSearchBar()}
+        <FlatList
+          data={this.state.dataVisible}
+          // refreshing={this.state.refreshing}
+          renderItem={this.renderItem}
+          keyExtractor={(item, index) => item.id}
+          // onRefresh={this.getData}
+        />
       </View>
     )
   }
@@ -148,6 +151,7 @@ export default class List extends Component {
     } catch (error) {
       console.log(error)
     }
+    return this.getData()
   }
 
   async persistCurrency(currency) {
@@ -157,6 +161,7 @@ export default class List extends Component {
     } catch (error) {
       console.log(error)
     }
+    return this.getData()
   }
 
   formatCurrency(numberString) {
@@ -227,10 +232,10 @@ export default class List extends Component {
     )
   }
 
-  getData() {
+  async getData() {
     const refreshing = !this.state.refreshing
 
-    fetch(`${endpoints.CMC_COINS}?convert=${this.state.currency}&limit=20`)
+    return fetch(`${endpoints.CMC_COINS}?convert=${this.state.currency}&limit=20`)
       .then((response) => response.json()).catch(() => this.setState({refreshing}))
       .then(data => this.setState({data, refreshing, dataVisible: data}))
       .done()
@@ -238,7 +243,7 @@ export default class List extends Component {
 
   async getDataConstructor() {
     await Promise.all([this.getCurrency(), this.getVariation()])
-    this.getData()
+    this.getData().done()
   }
 }
 
@@ -303,6 +308,5 @@ const styles = StyleSheet.create({
   image: {
     width: 32,
     height: 32
-  },
-  search: {paddingBottom: Metrics.headerHeight}
+  }
 });
