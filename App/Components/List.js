@@ -9,7 +9,6 @@ import {
   View,
   TouchableHighlight,
   FlatList,
-  ScrollView,
   Vibration,
   StatusBar,
   AsyncStorage
@@ -22,6 +21,7 @@ import * as endpoints from '../Network/endpoints.js'
 import Header from './Header'
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
+import variations from '../Data/variations.json'
 
 const DEFAULT_CURRENCY = 'USD'
 const STORAGE_KEY_CURRENCY = 'currency'
@@ -39,13 +39,15 @@ function getStylePercent(numberString) {
 function shareSocial(currency, variation, row) {
   const pattern = [75, 25, 75] // empirically imitating WhatsApp's vibration pattern
   Vibration.vibrate(pattern)
+
+  const variationLabel = variations.find(v => v.value === variation).label
   Share
     .open({
       message: [
         `${row.name} (${row.symbol})`,
         `is at`,
         `${formatCurrency(currency, row[`price_${currency.toLowerCase()}`])}`,
-        `(${row[variation]}% change 24h).`
+        `(${row[variation]}% change over the last ${variationLabel}).`
       ].join(' '),
       url: endpoints.GOOGLE_PLAY,
       subject: `Latest ${row.name} (${row.symbol}) price`
@@ -190,15 +192,13 @@ export default class List extends Component {
         />
         {this.renderHeader()}
         {this.renderSearchBar()}
-        <ScrollView>
-          <FlatList
-            data={this.state.dataVisible}
-            refreshing={this.state.refreshing}
-            renderItem={this.renderItem}
-            keyExtractor={(item, index) => item.id}
-            onRefresh={this.getData}
-          />
-        </ScrollView>
+        <FlatList
+          data={this.state.dataVisible}
+          refreshing={this.state.refreshing}
+          renderItem={this.renderItem}
+          keyExtractor={(item, index) => item.id}
+          onRefresh={this.getData}
+        />
       </View>
     )
   }
