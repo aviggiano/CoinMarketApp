@@ -1,6 +1,6 @@
 'use strict';
 
-import React, {Component} from 'react'
+import React, {Component, PureComponent} from 'react'
 
 import {
   StyleSheet,
@@ -28,6 +28,81 @@ const STORAGE_KEY_CURRENCY = 'currency'
 const DEFAULT_VARIATION = 'percent_change_24h'
 const STORAGE_KEY_VARIATION = 'variation'
 
+function formatCurrency(currency, numberString) {
+  return `${currencies[currency]} ${parseFloat(numberString).toFixed(2)}`
+}
+
+function getStylePercent(numberString) {
+  return (parseFloat(numberString) > 0) ? styles.rowDetailsGreen : styles.rowDetailsRed
+}
+
+function shareSocial(currency, variation, row) {
+  const pattern = [75, 25, 75] // empirically imitating WhatsApp's vibration pattern
+  Vibration.vibrate(pattern)
+  Share
+    .open({
+      message: [
+        `${row.name} (${row.symbol})`,
+        `is at`,
+        `${formatCurrency(currency, row[`price_${currency.toLowerCase()}`])}`,
+        `(${row[variation]}% change 24h).`
+      ].join(' '),
+      url: endpoints.GOOGLE_PLAY,
+      subject: `Latest ${row.name} (${row.symbol}) price`
+    })
+    .then((action) => console.log(action))
+    .catch((err) => console.log(err))
+}
+
+class MyListItem extends PureComponent {
+  render() {
+    const item = this.props.item
+    const currency = this.props.currency
+    const variation = this.props.variation
+
+    return (
+      <TouchableHighlight
+        onLongPress={() => shareSocial(currency, variation, item)}
+        underlayColor={Colors.press}>
+        <View>
+          <View style={styles.separator}/>
+          <View style={styles.rowContainer}>
+            <Text>
+              {"  "}
+            </Text>
+            <Text style={styles.rowRank}>
+              {item.rank}
+            </Text>
+            <Text>
+              {"  "}
+            </Text>
+            <Image style={styles.image}
+                   source={{uri: `${endpoints.CMC_IMAGES}${item.id}.png`}}
+            />
+            <Text>
+              {"  "}
+            </Text>
+            <View style={styles.rowDetailsContainerFlex}>
+              <View style={styles.rowDetailsContainer}>
+                <Text style={styles.rowTitle}>
+                  {`${item.name} (${item.symbol})`}
+                </Text>
+                <Text style={styles.rowCurrency}>
+                  {formatCurrency(currency, item[`price_${currency.toLowerCase()}`])}
+                </Text>
+                <Text style={getStylePercent(item[variation])}>
+                  {`${item[variation]}%`}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </TouchableHighlight>
+    )
+  }
+
+}
+
 export default class List extends Component {
   constructor(props) {
     super(props)
@@ -41,12 +116,12 @@ export default class List extends Component {
       dataVisible: []
     }
     this.getData = this.getData.bind(this)
-    this.renderItem = this.renderItem.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
     this.toggleSearchBar = this.toggleSearchBar.bind(this)
     this.onX = this.onX.bind(this)
     this.persistCurrency = this.persistCurrency.bind(this)
     this.persistVariation = this.persistVariation.bind(this)
+    this.renderItem = this.renderItem.bind(this)
 
     this.getDataConstructor().done()
   }
@@ -94,14 +169,17 @@ export default class List extends Component {
         ref={(ref) => this.searchBar = ref}
         onX={this.onX}
         allDataOnEmptySearch
-        clearOnBlur
-        clearOnHide
-        clearOnShow
         showOnLoad
       />
     ) : null
   }
 
+  renderItem(props) {
+    const {variation, currency} = this.state
+    return (
+      <MyListItem {...props} {...{variation, currency}} />
+    )
+  }
 
   render() {
     return (
@@ -164,74 +242,6 @@ export default class List extends Component {
       console.log(error)
     }
     return this.getData({currency})
-  }
-
-  formatCurrency(numberString) {
-    return `${currencies[this.state.currency]} ${parseFloat(numberString).toFixed(2)}`
-  }
-
-  getStylePercent(numberString) {
-    return (parseFloat(numberString) > 0) ? styles.rowDetailsGreen : styles.rowDetailsRed
-  }
-
-  shareSocial(row) {
-    const pattern = [75, 25, 75] // empirically imitating WhatsApp's vibration pattern
-    Vibration.vibrate(pattern)
-    Share
-      .open({
-        message: [
-          `${row.name} (${row.symbol})`,
-          `is at`,
-          `${this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}`,
-          `(${row[this.state.variation]}% change 24h).`
-        ].join(' '),
-        url: endpoints.GOOGLE_PLAY,
-        subject: `Latest ${row.name} (${row.symbol}) price`
-      })
-      .then((action) => console.log(action))
-      .catch((err) => console.log(err))
-  }
-
-  renderItem({item}) {
-    return (
-      <TouchableHighlight
-        onLongPress={() => this.shareSocial(item)}
-        underlayColor={Colors.press}>
-        <View>
-          <View style={styles.separator}/>
-          <View style={styles.rowContainer}>
-            <Text>
-              {"  "}
-            </Text>
-            <Text style={styles.rowRank}>
-              {item.rank}
-            </Text>
-            <Text>
-              {"  "}
-            </Text>
-            <Image style={styles.image}
-                   source={{uri: `${endpoints.CMC_IMAGES}${item.id}.png`}}
-            />
-            <Text>
-              {"  "}
-            </Text>
-            <View style={styles.rowDetailsContainerFlex}>
-              <View style={styles.rowDetailsContainer}>
-                <Text style={styles.rowTitle}>
-                  {`${item.name} (${item.symbol})`}
-                </Text>
-                <Text style={styles.rowCurrency}>
-                  {this.formatCurrency(item[`price_${this.state.currency.toLowerCase()}`])}
-                </Text>
-                <Text style={this.getStylePercent(item[this.state.variation])}>
-                  {`${item[this.state.variation]}%`}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </TouchableHighlight>
-    )
   }
 
   async getData(state) {

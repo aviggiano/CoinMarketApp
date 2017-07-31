@@ -7,17 +7,17 @@ const type = {
 }
 
 const size = {
-  h1: 38,
-  h2: 34,
-  h3: 30,
-  h4: 26,
-  h5: 20,
-  h6: 19,
-  input: 18,
-  regular: 17,
-  medium: 14,
-  small: 12,
-  tiny: 8.5
+  h1: 36,
+  h2: 32,
+  h3: 28,
+  h4: 24,
+  h5: 18,
+  h6: 17,
+  input: 16,
+  regular: 15,
+  medium: 12,
+  small: 10,
+  tiny: 6.5
 }
 
 const style = {

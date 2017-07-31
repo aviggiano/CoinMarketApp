@@ -64,17 +64,17 @@ const styles = StyleSheet.create({
   text: {
     ...{
       color: Colors.headerText,
-      paddingTop: Metrics.padding / 2,
-      paddingLeft: Metrics.padding / 2
+      paddingTop: Metrics.padding / (5/3),
+      paddingLeft: Metrics.padding / 2,
     },
-    ...Fonts.style.h6
+    ...Fonts.style.h5
   },
   picker: {
-    ...{flex: 1.3},
+    ...{width: 100},
     ...{color: Colors.headerText, paddingVertical: Metrics.padding}
   },
   picker2: {
-    ...{flex: 1.2},
+    ...{width: 100},
     ...{color: Colors.headerText, paddingVertical: Metrics.padding}
   },
   flex0p3: {flex: 0.3},
