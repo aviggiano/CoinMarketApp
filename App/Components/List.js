@@ -10,9 +10,8 @@ import {
   TouchableHighlight,
   FlatList,
   Vibration,
-  StatusBar,
   AsyncStorage
-} from 'react-native';
+} from 'react-native'
 
 import Share from 'react-native-share'
 import SearchBar from 'react-native-searchbar'
@@ -186,10 +185,6 @@ export default class List extends Component {
   render() {
     return (
       <View>
-        <StatusBar
-          backgroundColor={Colors.darkMain}
-          barStyle="light-content"
-        />
         {this.renderHeader()}
         {this.renderSearchBar()}
         <FlatList
