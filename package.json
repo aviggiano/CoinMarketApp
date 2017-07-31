@@ -1,24 +1,26 @@
 {
-  "name": "CoinMarketCap",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
-  },
-  "dependencies": {
-    "react": "16.0.0-alpha.6",
-    "react-native": "0.44.2",
-    "react-native-gifted-listview": "0.0.15",
-    "react-native-share": "^1.0.20"
-  },
-  "devDependencies": {
-    "babel-jest": "20.0.3",
-    "babel-preset-react-native": "1.9.2",
-    "jest": "20.0.4",
-    "react-test-renderer": "16.0.0-alpha.6"
-  },
-  "jest": {
-    "preset": "react-native"
-  }
+    "name": "CoinMarketCap",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node node_modules/react-native/local-cli/cli.js start",
+        "test": "jest"
+    },
+    "dependencies": {
+        "react": "16.0.0-alpha.6",
+        "react-native": "0.44.2",
+        "react-native-gifted-listview": "0.0.15",
+        "react-native-searchbar": "git://github.com/aviggiano/react-native-searchbar.git",
+        "react-native-share": "^1.0.20",
+        "react-native-vector-icons": "^4.2.0"
+    },
+    "devDependencies": {
+        "babel-jest": "20.0.3",
+        "babel-preset-react-native": "1.9.2",
+        "jest": "20.0.4",
+        "react-test-renderer": "16.0.0-alpha.6"
+    },
+    "jest": {
+        "preset": "react-native"
+    }
 }

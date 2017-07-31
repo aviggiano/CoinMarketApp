@@ -8,19 +8,21 @@ import {
   Image,
   View,
   TouchableHighlight,
+  FlatList,
+  ScrollView,
   Vibration,
+  StatusBar,
   AsyncStorage
 } from 'react-native';
 
 import Share from 'react-native-share'
+import SearchBar from 'react-native-searchbar'
+
 import * as endpoints from '../Network/endpoints.js'
-import RefreshableListView from './RefreshableListView'
 import Header from './Header'
 import {Colors, Fonts} from '../Themes/'
 import currencies from '../Data/currencies.json'
 
-
-const PAGE_SIZE = 100
 const DEFAULT_CURRENCY = 'USD'
 const STORAGE_KEY_CURRENCY = 'currency'
 const DEFAULT_VARIATION = 'percent_change_24h'
@@ -32,40 +34,95 @@ export default class List extends Component {
 
     this.state = {
       currency: DEFAULT_CURRENCY,
-      variation: DEFAULT_VARIATION
+      variation: DEFAULT_VARIATION,
+      isSearching: false,
+      refreshing: true,
+      data: [],
+      dataVisible: []
     }
-    this.getCurrency()
-    this.getVariation()
-    this.listViewOnRefresh = this.listViewOnRefresh.bind(this)
-    this.renderListViewRow = this.renderListViewRow.bind(this)
+    this.getData = this.getData.bind(this)
+    this.renderItem = this.renderItem.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
+    this.toggleSearchBar = this.toggleSearchBar.bind(this)
+    this.onX = this.onX.bind(this)
+    this.persistCurrency = this.persistCurrency.bind(this)
+    this.persistVariation = this.persistVariation.bind(this)
+
+    this.getDataConstructor().done()
   }
 
-  render() {
+  onX() {
+    this.searchBar._clearInput()
+  }
+
+  toggleSearchBar() {
+    const isSearching = !this.state.isSearching
+    if (!isSearching) {
+      this.onX()
+    }
+    this.setState({isSearching})
+  }
+
+  handleSearch(input) {
+    const inputLower = input.toLowerCase()
+    const dataVisible = this.state.data.filter((object) => (
+      object.name.toLowerCase().indexOf(inputLower) > -1 ||
+      object.symbol.toLowerCase().indexOf(inputLower) > -1
+    ))
+    this.setState({dataVisible})
+  }
+
+  renderHeader() {
     return (
-      <RefreshableListView
-        key={`${this.state.currency}/${this.state.variation}`}
-        renderRow={this.renderListViewRow}
-        renderHeader={() =>
-          <Header
-            selectedValue={this.state.currency}
-            selectedValueVariation={this.state.variation}
-            onValueChange={(currency) => this.persistCurrency(currency)}
-            onValueChangeVariation={(period) => this.persistVariation(period)}
-          />}
-        onRefresh={this.listViewOnRefresh}
-        backgroundColor={Colors.clair}/>
+      <Header
+        selectedValue={this.state.currency}
+        selectedValueVariation={this.state.variation}
+        onValueChange={this.persistCurrency}
+        onValueChangeVariation={this.persistVariation}
+        toggleSearchBar={this.toggleSearchBar}
+      />
     )
   }
 
-  async getStorage(storageKey, stateKey) {
-    try {
-      const value = await AsyncStorage.getItem(storageKey)
-      if (value !== null) {
-        this.setState({[stateKey]: value})
-      }
-    } catch (error) {
-      console.log(error)
-    }
+  renderSearchBar() {
+    return this.state.isSearching ? (
+      <SearchBar
+        style={styles.style}
+        data={this.state.data}
+        handleSearch={this.handleSearch}
+        onBack={this.toggleSearchBar}
+        ref={(ref) => this.searchBar = ref}
+        onX={this.onX}
+        allDataOnEmptySearch
+        clearOnBlur
+        clearOnHide
+        clearOnShow
+        showOnLoad
+      />
+    ) : null
+  }
+
+
+  render() {
+    return (
+      <View>
+        <StatusBar
+          backgroundColor={Colors.darkMain}
+          barStyle="light-content"
+        />
+        {this.renderHeader()}
+        {this.renderSearchBar()}
+        <ScrollView>
+          <FlatList
+            data={this.state.dataVisible}
+            refreshing={this.state.refreshing}
+            renderItem={this.renderItem}
+            keyExtractor={(item, index) => item.id}
+            onRefresh={this.getData}
+          />
+        </ScrollView>
+      </View>
+    )
   }
 
   async getCurrency() {
@@ -97,15 +154,16 @@ export default class List extends Component {
     } catch (error) {
       console.log(error)
     }
+    return this.getData({variation})
   }
 
   async persistCurrency(currency) {
-    this.setState({currency})
     try {
       await AsyncStorage.setItem(STORAGE_KEY_CURRENCY, currency);
     } catch (error) {
       console.log(error)
     }
+    return this.getData({currency})
   }
 
   formatCurrency(numberString) {
@@ -134,55 +192,61 @@ export default class List extends Component {
       .catch((err) => console.log(err))
   }
 
-  renderListViewRow(row) {
+  renderItem({item}) {
     return (
       <TouchableHighlight
-        onLongPress={() => this.shareSocial(row)}
+        onLongPress={() => this.shareSocial(item)}
         underlayColor={Colors.press}>
-        <View style={styles.rowContainer}>
-          <Text>
-            {"  "}
-          </Text>
-          <Text style={styles.rowRank}>
-            {row.rank}
-          </Text>
-          <Text>
-            {"  "}
-          </Text>
-          <Image style={{width: 32, height: 32}}
-                 source={{uri: `${endpoints.CMC_IMAGES}${row.id}.png`}}
-          />
-          <Text>
-            {"  "}
-          </Text>
-          <View style={styles.rowDetailsContainerFlex}>
-            <View style={styles.rowDetailsContainer}>
-              <Text style={styles.rowTitle}>
-                {`${row.name} (${row.symbol})`}
-              </Text>
-              <Text style={styles.rowCurrency}>
-                {this.formatCurrency(row[`price_${this.state.currency.toLowerCase()}`])}
-              </Text>
-              <Text style={this.getStylePercent(row[this.state.variation])}>
-                {`${row[this.state.variation]}%`}
-              </Text>
+        <View>
+          <View style={styles.separator}/>
+          <View style={styles.rowContainer}>
+            <Text>
+              {"  "}
+            </Text>
+            <Text style={styles.rowRank}>
+              {item.rank}
+            </Text>
+            <Text>
+              {"  "}
+            </Text>
+            <Image style={styles.image}
+                   source={{uri: `${endpoints.CMC_IMAGES}${item.id}.png`}}
+            />
+            <Text>
+              {"  "}
+            </Text>
+            <View style={styles.rowDetailsContainerFlex}>
+              <View style={styles.rowDetailsContainer}>
+                <Text style={styles.rowTitle}>
+                  {`${item.name} (${item.symbol})`}
+                </Text>
+                <Text style={styles.rowCurrency}>
+                  {this.formatCurrency(item[`price_${this.state.currency.toLowerCase()}`])}
+                </Text>
+                <Text style={this.getStylePercent(item[this.state.variation])}>
+                  {`${item[this.state.variation]}%`}
+                </Text>
+              </View>
             </View>
-            <View style={styles.separator}/>
           </View>
         </View>
       </TouchableHighlight>
     )
   }
 
-  listViewOnRefresh(pageCount, callback) {
-    const items = PAGE_SIZE * pageCount
-    fetch(`${endpoints.CMC_COINS}${items}&convert=${this.state.currency}`)
-      .then((response) => response.json())
-      .then(array => {
-        callback(array.slice(-PAGE_SIZE))
-      })
-      .catch((err) => callback([]))
+  async getData(state) {
+    state = state || {}
+    const currency = state.currency || this.state.currency
+
+    return fetch(`${endpoints.CMC_COINS}?convert=${currency}&limit=20`)
+      .then((response) => response.json()).catch(() => this.setState(state))
+      .then(data => this.setState({data, dataVisible: data, ...state}))
       .done()
+  }
+
+  async getDataConstructor() {
+    await Promise.all([this.getCurrency(), this.getVariation()])
+    this.getData({refreshing: false}).done()
   }
 }
 
@@ -243,5 +307,9 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: Colors.separator
+  },
+  image: {
+    width: 32,
+    height: 32
   }
 });

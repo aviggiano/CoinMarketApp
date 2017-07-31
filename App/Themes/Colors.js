@@ -5,6 +5,7 @@ const colors = {
   darkMain: '#600060',
   headerBackground: '#800080',
   headerText: '#FFFFFF',
+  white: '#FFFFFF',
   text: '#808080',
   separator: '#CCCCCC',
   clair: '#F6F6EF',

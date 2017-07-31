@@ -3,12 +3,13 @@ import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
   Picker,
-  StatusBar,
 } from 'react-native';
-import {Colors, Fonts} from '../Themes/'
+import {Colors, Fonts, Metrics} from '../Themes/'
 import currencies from '../Data/currencies.json'
 import variations from '../Data/variations.json'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default class Header extends React.Component {
   constructor(props) {
@@ -18,16 +19,19 @@ export default class Header extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor={Colors.darkMain}
-          barStyle="light-content"
-        />
         <Text style={[styles.flex0p3, styles.text]}>
           {"#"}
         </Text>
         <Text style={[styles.flex2, styles.text]}>
           {"Name"}
         </Text>
+        <TouchableOpacity
+          onPress={() => this.props.toggleSearchBar()}>
+          <Icon
+            name='search'
+            size={Metrics.buttonSize}
+            style={styles.icon}/>
+        </TouchableOpacity>
         <Picker
           style={styles.picker}
           selectedValue={this.props.selectedValue}
@@ -53,15 +57,28 @@ export default class Header extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: Metrics.headerHeight,
     flexDirection: 'row',
-    alignItems: 'flex-start',
     backgroundColor: Colors.headerBackground,
   },
-  text: Object.assign({}, {color: Colors.headerText, padding: 10}, Fonts.style.h6),
-  picker: Object.assign({}, {flex: 1.3}, {color: Colors.headerText, padding: 10}),
-  picker2: Object.assign({}, {flex: 1.2}, {color: Colors.headerText, padding: 10}),
+  text: {
+    ...{
+      color: Colors.headerText,
+      paddingTop: Metrics.padding / 2,
+      paddingLeft: Metrics.padding / 2
+    },
+    ...Fonts.style.h6
+  },
+  picker: {
+    ...{flex: 1.3},
+    ...{color: Colors.headerText, paddingVertical: Metrics.padding}
+  },
+  picker2: {
+    ...{flex: 1.2},
+    ...{color: Colors.headerText, paddingVertical: Metrics.padding}
+  },
   flex0p3: {flex: 0.3},
   flex2: {flex: 1.9},
   flex0p5: {flex: 0.5},
+  icon: {color: Colors.headerText, paddingTop: Metrics.padding/2, paddingRight: Metrics.padding/2}
 })
