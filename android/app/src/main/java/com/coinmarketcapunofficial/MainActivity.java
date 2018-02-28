@@ -1,4 +1,4 @@
-package com.coinmarketapp;
+package com.coinmarketcapunofficial;
 
 import com.facebook.react.ReactActivity;
 
