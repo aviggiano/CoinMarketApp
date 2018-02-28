@@ -60,7 +60,6 @@ class MyListItem extends PureComponent {
     const item = this.props.item
     const currency = this.props.currency
     const variation = this.props.variation
-
     return (
       <TouchableHighlight
         onLongPress={() => shareSocial(currency, variation, item)}
@@ -78,7 +77,7 @@ class MyListItem extends PureComponent {
               {"  "}
             </Text>
             <Image style={styles.image}
-                   source={{uri: `${endpoints.CMC_IMAGES}${item.id}.png`}}
+                   source={{uri: `${endpoints.CRYPTOCURRENCY_IMAGES}${item.symbol.toLowerCase()}.png`}}
             />
             <Text>
               {"  "}

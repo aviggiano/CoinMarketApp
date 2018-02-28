@@ -1,5 +1,9 @@
 [
   {
+    "value": "percent_change_1h",
+    "label": "1h"
+  },
+  {
     "value": "percent_change_24h",
     "label": "24h"
   },
