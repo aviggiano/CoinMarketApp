@@ -1,4 +1,4 @@
-package com.coinmarketcap;
+package com.coinmarketapp;
 
 import android.app.Application;
 

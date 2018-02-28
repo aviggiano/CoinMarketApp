@@ -1,4 +1,4 @@
-rootProject.name = 'CoinMarketCap'
+rootProject.name = 'CoinMarketApp'
 include ':react-native-share'
 project(':react-native-share').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share/android')
 
